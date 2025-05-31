@@ -125,7 +125,7 @@ class _PlaylistPageState extends State<PlaylistsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text('Плейлист', style: TextStyle(
+          child: Text('Плейлисты', style: TextStyle(
             fontWeight: FontWeight.bold
           ),),
           ),

@@ -16,11 +16,35 @@ class _PlaylistVideosPageState extends State<PlaylistVideosPage> {
   final _videoService = VideoService();
   List<VideoWithExtras>? _videos;
   bool _loading = true;
+  bool _myChannel = false;
 
   @override
   void initState() {
     _loadVideos();
+    _isMyChannel();
     super.initState();
+  }
+
+  Future<void> _isMyChannel() async {
+    final currentUsersChannelId = await supabase
+      .from('channel')
+      .select()
+      .eq('user_id', supabase.auth.currentUser!.id)
+      .maybeSingle();
+
+    final channelId = await supabase
+      .from('playlist')
+      .select()
+      .eq('id', widget.playlistId)
+      .maybeSingle();
+
+    if(currentUsersChannelId!['id'] == channelId!['channel_id']) {
+      if(mounted) {
+        setState(() {
+          _myChannel = true;
+        });
+      }
+    }
   }
 
   Future<void> _loadVideos() async {
@@ -74,7 +98,7 @@ class _PlaylistVideosPageState extends State<PlaylistVideosPage> {
         ) : Center( child: SizedBox(
           width: 750,
           child: 
-            VideoList(videos: _videos!, playlistId: widget.playlistId,)
+            VideoList(videos: _videos!, playlistId: _myChannel ? widget.playlistId : 0,)
         ) 
         ),
 

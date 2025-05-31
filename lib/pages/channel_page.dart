@@ -333,7 +333,7 @@ class _ChannelPageState extends State<ChannelPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ChannelVideosPage(channelId: _channel!.id, isMyChannel: true),
+                                  builder: (context) => ChannelVideosPage(channelId: _channel!.id, isMyChannel: _myChannel),
                                 ),
                               );
                             }),

@@ -51,7 +51,7 @@ class _SubscribesPageState extends State<SubscribesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text('Плейлист', style: TextStyle(
+          child: Text('Ваши подписки', style: TextStyle(
             fontWeight: FontWeight.bold
           ),),
           ),

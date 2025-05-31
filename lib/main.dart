@@ -14,7 +14,7 @@ Future<void> main() async {
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3anJxbHhkc2dhZmhnaG5rZ21nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxODg1MzMsImV4cCI6MjA1OTc2NDUzM30.HGEhe8vFik60y9V1r0ADEiOR-FBnrlmMG-qtf0npFlc',
   );
   runApp(const MainApp());
-}
+} 
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});

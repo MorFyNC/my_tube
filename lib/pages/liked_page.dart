@@ -32,7 +32,7 @@ class _likedPageState extends State<LikedPage> {
 
     final rawVideos = await _videoService.fetchRawVideos();
 
-    final viewedVideoIds = likesResponse.map((like) => like['video_id'] as int).toList();
+    final viewedVideoIds = likesResponse.map((like) => like['video_id'] as int?).toList();
 
     final filteredVideos = rawVideos.where(
       (x) => viewedVideoIds.contains(x['id']))
