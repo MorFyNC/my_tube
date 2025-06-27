@@ -134,11 +134,13 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
 
-    final publicUrl = supabase.storage.from('avatars').getPublicUrl(storagePath);
+final publicUrl = '${supabase.storage.from('avatars').getPublicUrl(storagePath)}?t=${DateTime.now().millisecondsSinceEpoch}';
 
     await supabase.from('user').update({
       'image': publicUrl,
     }).eq('id', user.id);
+
+    if(!mounted) return;
 
     setState(() {
       _avatarUrl = publicUrl;

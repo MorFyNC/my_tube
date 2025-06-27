@@ -16,6 +16,8 @@ class UploadVideoPage extends StatefulWidget {
 }
 
 class _UploadVideoPageState extends State<UploadVideoPage> {
+  List<dynamic> _allTags = [];
+  List<dynamic> _selectedTags = [];
   File? _videoFile;
   File? _imageFile;
   String _name = '';
@@ -30,6 +32,19 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
   void initState() {
     super.initState();
     _userHasChannel();
+    _fetchTags();
+  }
+
+  Future<void> _fetchTags() async {
+  final response = await Supabase.instance.client
+    .from('tag')
+    .select('*');
+
+  if (mounted) {
+    setState(() {
+      _allTags = response as List<dynamic>;
+    });
+  } 
   }
 
   Future<void> _userHasChannel() async {
@@ -112,6 +127,23 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
         'channel_id': channelId,
       });
 
+      final insertResponse = await supabase.from('video').insert({
+        'name': _name,
+        'description': _description,
+        'video': videoFilename,
+        'image': imageFilename,
+        'channel_id': channelId,
+      }).select().single();
+
+      final videoId = insertResponse['id'];
+
+      for (final tag in _selectedTags) {
+        await supabase.from('video_tags').insert({
+          'video_id': videoId,
+          'tag_id': tag['id'],
+        });
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Видео успешно загружено')),
@@ -131,6 +163,61 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
       setState(() => _uploading = false);
     }
   }
+
+  void _chooseTags() async {
+  final selected = await showDialog<List<dynamic>>(
+    context: context,
+    builder: (context) {
+      List<dynamic> tempSelected = List<dynamic>.from(_selectedTags);
+
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Выберите тэги'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: _allTags.map((tag) {
+                  final isChecked = tempSelected.any((t) => t['id'] == tag['id']);
+                  return CheckboxListTile(
+                    value: isChecked,
+                    title: Text(tag['name']),
+                    onChanged: (bool? checked) {
+                      setState(() {
+                        if (checked == true) {
+                          if (!isChecked) tempSelected.add(tag);
+                        } else {
+                          tempSelected.removeWhere((t) => t['id'] == tag['id']);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, null),
+                child: const Text('Отмена'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, tempSelected),
+                child: const Text('Выбрать'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  if (selected != null) {
+    setState(() {
+      _selectedTags = selected;
+    });
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +268,11 @@ class _UploadVideoPageState extends State<UploadVideoPage> {
                     icon: const Icon(Icons.image),
                     onPressed: _pickImage,
                     label: const Text('Выбрать превью'),
+                  ),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.tag),
+                    onPressed: _chooseTags,
+                    label: const Text('Выбрать тэги')
                   ),
                   const SizedBox(height: 20),
                   if (_uploading) const CircularProgressIndicator(),

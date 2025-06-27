@@ -22,7 +22,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ВидеоХостинг',
+      title: 'MyTube',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme, 
       initialRoute: '/register', 
